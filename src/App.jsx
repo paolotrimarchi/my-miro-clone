@@ -17,6 +17,7 @@ const generateSectionsAndBoards = (spaceId, sectionConfigs) => {
                 lastOpenedDate: dates[boardCounter % dates.length],
                 onlineUsers: Math.floor(Math.random() * 5),
                 spaceId: spaceId,
+                classification: 'Internal',
             };
             boardCounter++;
             return board;
@@ -120,6 +121,49 @@ const spacesData = {
     }
 };
 
+const teamBoardsData = [
+    {
+        id: 'team-board-1',
+        name: 'Quarterly Business Review',
+        icon: '📊',
+        owner: 'Paolo Trimarchi',
+        lastOpenedDate: 'Today',
+        onlineUsers: 3,
+        spaceId: null,
+        classification: 'Confidential'
+    },
+    {
+        id: 'team-board-2',
+        name: 'All-Hands Meeting Notes',
+        icon: '🗣️',
+        owner: 'Jane Doe',
+        lastOpenedDate: 'Yesterday',
+        onlineUsers: 0,
+        spaceId: null,
+        classification: 'Internal'
+    }
+];
+
+const allBoards = [
+    ...Object.values(spacesData).flatMap(s => s.sections.flatMap(sec => sec.boards)),
+    ...teamBoardsData
+];
+const allBoardsMap = new Map(allBoards.map(board => [board.id, board]));
+
+
+const templates = [
+  { title: "Blank board", type: 'blank' },
+  { title: "Roadmap Planning", type: 'blueprint', image: 'https://placehold.co/200x110/EFF6FF/3B82F6?text=Blueprint' },
+  { title: "Goal Setting (OKR)", type: 'blueprint', image: 'https://placehold.co/200x110/F0FDF4/22C55E?text=Blueprint' },
+  { title: "Project Workspace", type: 'standard', image: 'https://placehold.co/200x110/FEFCE8/EAB308?text=Workspace' },
+  { title: "Flowchart", type: 'standard', image: 'https://placehold.co/200x110/EEF2FF/6366F1?text=Flowchart' },
+  { title: "Mind Map", type: 'standard', image: 'https://placehold.co/200x110/FDF2F2/EF4444?text=Mind+Map' },
+  { title: "Kanban Framework", type: 'standard', image: 'https://placehold.co/200x110/FAF5FF/A855F7?text=Kanban' },
+  { title: "Quick Retrospective", type: 'standard', image: 'https://placehold.co/200x110/ECFEFF/06B6D4?text=Retro' },
+  { title: "Brainwriting", type: 'standard', image: 'https://placehold.co/200x110/FFFBEB/F59E0B?text=Ideas' },
+  { title: "From Miroverse", type: 'miroverse', image: 'https://placehold.co/200x110/DBEAFE/3B82F6?text=Miroverse' },
+];
+
 // --- SVG Icons ---
 const SearchIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={`${className} text-gray-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 const ExploreIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.25278C12 6.25278 6.75 3 3.75 3C3.75 3 3 12 12 21C21 12 20.25 3 20.25 3C17.25 3 12 6.25278 12 6.25278Z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15C14.2091 15 16 13.2091 16 11C16 8.79086 14.2091 7 12 7C9.79086 7 8 8.79086 8 11C8 13.2091 9.79086 15 12 15Z" /></svg>;
@@ -134,6 +178,7 @@ const GridIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/20
 const CloseIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={`${className} text-gray-600`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>;
 const MenuIcon = ({ className = "h-6 w-6" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>;
 const PlayIcon = () => <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M6.323 3.682a.5.5 0 01.765-.424l8 4.5a.5.5 0 010 .848l-8 4.5a.5.5 0 01-.765-.424V3.682z"></path></svg>;
+const BackArrowIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>;
 
 
 // --- DASHBOARD COMPONENTS ---
@@ -207,31 +252,90 @@ const DashboardSidebar = ({ onNavigateToSpace, onNavigateToRecent, activeDashboa
 };
 
 const DashboardHeader = () => (
-    <header className="flex items-center justify-between p-4 h-16 border-b bg-white">
-        <div className="flex-1 max-w-md"><div className="relative"><input type="text" placeholder="Search or ask anything" className="w-full bg-gray-100 border border-transparent rounded-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /><div className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-gray-400">⌘+Shift+E</div></div></div>
-        <div className="flex items-center gap-4"><div className="flex items-center gap-2"><button className="p-2 rounded-full hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button><button className="p-2 rounded-full hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4c0-1.165.45-2.205 1.228-3z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12c-3 0-6 1.5-6 3v1h12v-1c0-1.5-3-3-6-3z" /></svg></button></div><img src="https://placehold.co/32x32/E0E0E0/000000?text=P" alt="User Avatar" className="w-8 h-8 rounded-full" /></div>
+    <header className="flex items-center justify-between p-4 h-16 border-b bg-white flex-shrink-0">
+         <div className="flex-1 max-w-lg">
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><SearchIcon className="h-5 w-5 text-gray-400" /></div>
+                <input type="text" placeholder="Search or ask anything" className="w-full bg-white border border-gray-300 rounded-lg py-2 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500" />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center text-xs text-gray-400">⌘+Shift+E</div>
+            </div>
+        </div>
+        <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+                <button className="p-2 rounded-full hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg></button>
+                <button className="p-2 rounded-full hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4s-1.79 4-4 4-4-1.79-4-4c0-1.165.45-2.205 1.228-3z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 12c-3 0-6 1.5-6 3v1h12v-1c0-1.5-3-3-6-3z" /></svg></button>
+            </div>
+            <img src="https://placehold.co/32x32/E0E0E0/000000?text=P" alt="User Avatar" className="w-8 h-8 rounded-full" />
+        </div>
     </header>
 );
 
-const TemplateCard = ({ title, bgColor, children }) => <div className="flex flex-col items-center text-center"><div className={`w-full h-24 rounded-lg flex items-center justify-center ${bgColor} mb-2`}>{children}</div><span className="text-sm font-medium">{title}</span></div>;
+const TemplateCard = ({ template }) => {
+    if (template.type === 'blank') {
+        return (
+            <div className="flex flex-col items-center text-center flex-shrink-0 w-40">
+                <div className="w-full h-24 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 mb-2 hover:border-blue-500 cursor-pointer">
+                    <PlusIcon className="h-8 w-8 text-gray-400" />
+                </div>
+                <span className="text-sm font-medium">{template.title}</span>
+            </div>
+        );
+    }
 
-const DashboardContent = () => {
-    const boardItems = [{ name: 'Untitled', modified: 'Yesterday', owner: 'Paolo Trimarchi', classification: 'Internal' }, { name: 'Customer Touchpoint Map', modified: 'Sep 23, 2024', owner: 'Paolo Trimarchi', classification: 'Internal' }];
     return (
-        <main className="flex-1 bg-white overflow-y-auto"><DashboardHeader /><div className="p-8">
-            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4 mb-8">
-                <div className="flex flex-col items-center text-center"><div className="w-full h-24 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 mb-2 hover:border-blue-500 cursor-pointer"><PlusIcon className="h-8 w-8" /></div><span className="text-sm font-medium">Blank board</span></div>
-                <TemplateCard title="Roadmap Planning" bgColor="bg-blue-100"><span className="text-xs p-1 bg-white rounded">Blueprint</span></TemplateCard>
-                <TemplateCard title="Guid Setting (OKR)" bgColor="bg-green-100"><span className="text-xs p-1 bg-white rounded">Blueprint</span></TemplateCard>
+        <div className="flex flex-col items-center text-center flex-shrink-0 w-40 cursor-pointer group">
+             <div className="w-full h-24 rounded-lg mb-2 overflow-hidden border border-gray-200 group-hover:border-blue-500">
+                <img src={template.image} alt={template.title} className="w-full h-full object-cover" />
+             </div>
+            <span className="text-sm font-medium">{template.title}</span>
+        </div>
+    );
+};
+
+
+const DashboardContent = ({ onNavigateToBoard }) => {
+    const allBoardsInTeam = [...Object.values(spacesData).flatMap(s => s.sections.flatMap(sec => sec.boards)), ...teamBoardsData];
+
+    return (
+        <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+            <DashboardHeader />
+            <div className="p-8">
+                <div className="bg-gray-50 rounded-lg p-4 mb-8">
+                     <div className="flex space-x-4 overflow-x-auto pb-2">
+                        {templates.map((template, index) => <TemplateCard key={index} template={template} />)}
+                    </div>
+                </div>
+                <div>
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-2xl font-bold">Boards in this team</h2>
+                        <div className="flex items-center gap-4">
+                            <button className="text-sm font-medium text-blue-600 hover:underline">Explore templates</button>
+                            <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-blue-700">
+                                <PlusIcon className="h-4 w-4 text-white" /> Create new
+                            </button>
+                        </div>
+                    </div>
+                    <table className="w-full text-left text-sm">
+                        <thead><tr className="text-gray-500 font-medium"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4">Online users</th><th className="py-2 px-4">Classification</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4">Owner</th><th className="py-2 px-4"></th></tr></thead>
+                        <tbody>{allBoardsInTeam.map((board) => 
+                            <tr key={board.id} className="border-t hover:bg-gray-50">
+                                <td className="py-3 px-4">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); onNavigateToBoard(board); }} className="font-medium flex items-center gap-2 hover:underline">
+                                        <span>{board.icon}</span>{board.name}
+                                    </a>
+                                    <div className="text-xs text-gray-500 ml-6">Modified by {board.owner}, {board.lastOpenedDate}</div>
+                                </td>
+                                <td className="py-3 px-4">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
+                                <td className="py-3 px-4">{board.classification && <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">{board.classification}</span>}</td>
+                                <td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td>
+                                <td className="py-3 px-4 text-gray-600">{board.owner}</td>
+                                <td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td>
+                            </tr>)}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div>
-                <div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-bold">Boards in this team</h2><div className="flex items-center gap-4"><button className="text-sm font-medium text-blue-600">Explore templates</button><button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"><PlusIcon className="h-4 w-4" /> Create new</button></div></div>
-                <table className="w-full text-left text-sm">
-                    <thead><tr className="text-gray-500 font-medium"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4">Online users</th><th className="py-2 px-4">Classification</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4">Owner</th><th className="py-2 px-4"></th></tr></thead>
-                    <tbody>{boardItems.map((item, index) => <tr key={index} className="border-t hover:bg-gray-50"><td className="py-3 px-4"><div className="font-medium">{item.name}</div><div className="text-xs text-gray-500">Modified by {item.owner}, {item.modified}</div></td><td className="py-3 px-4"></td><td className="py-3 px-4">{item.classification && <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">{item.classification}</span>}</td><td className="py-3 px-4 text-gray-600">{item.modified}</td><td className="py-3 px-4 text-gray-600">{item.owner}</td><td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td></tr>)}</tbody>
-                </table>
-            </div>
-        </div></main>
+        </main>
     );
 };
 
@@ -261,7 +365,7 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
                                     <tr key={board.id} className="border-t hover:bg-gray-50">
                                         <td className="py-3 px-4"><a href="#" onClick={(e) => {e.preventDefault(); onNavigateToBoard(board.spaceId, board.id)}} className="font-medium flex items-center gap-2 hover:underline"><span>{board.icon}</span>{board.name}</a></td>
                                         <td className="py-3 px-4">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
-                                        <td className="py-3 px-4 text-gray-600">{spacesData[board.spaceId].name}</td>
+                                        <td className="py-3 px-4 text-gray-600">{board.spaceId ? spacesData[board.spaceId].name : 'Team Board'}</td>
                                         <td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td>
                                         <td className="py-3 px-4 text-gray-600">{board.owner}</td>
                                         <td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td>
@@ -278,21 +382,39 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
 
 // --- SPACE VIEW COMPONENTS ---
 
-const SpaceMenu = ({ onSwitchSidebar, onShowRecent, closeMenu }) => {
+const SpaceMenu = ({ onSwitchSidebar, onShowRecent, closeMenu, sidebarSpaceId, activeContentSpaceId }) => {
     const pinnedSpaces = Object.entries(spacesData).filter(([, s]) => s.pinned);
+    const showBackToSpace = activeContentSpaceId && sidebarSpaceId && activeContentSpaceId !== sidebarSpaceId;
+    const activeContentSpaceName = showBackToSpace ? spacesData[activeContentSpaceId].name : '';
 
     return (
-        <div className="absolute top-full mt-2 w-64 bg-white rounded-md shadow-lg border z-10 p-2">
+        <div className="absolute top-full mt-2 w-64 bg-white rounded-md shadow-lg border z-10 p-2 space-y-1">
+            {showBackToSpace && (
+                <>
+                    <a 
+                        href="#" 
+                        onClick={(e) => { e.preventDefault(); onSwitchSidebar(activeContentSpaceId); closeMenu(); }} 
+                        className="flex items-center gap-3 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700"
+                    >
+                        <BackArrowIcon />
+                        <span>{activeContentSpaceName}</span>
+                    </a>
+                    <div className="pt-1"><div className="border-t border-gray-200"></div></div>
+                </>
+            )}
             <div>
-                <h3 className="text-xs font-semibold text-gray-500 px-2 mb-1 flex items-center gap-2"><StarredIcon /> Pinned Spaces</h3>
+                <h3 className="text-sm font-bold text-gray-800 px-2 my-2 flex items-center gap-2">
+                    <StarredIcon className="h-4 w-4" /> Pinned Spaces
+                </h3>
                 <div className="space-y-1">
                     {pinnedSpaces.map(([id, space]) => (
                         <a href="#" key={id} onClick={(e) => { e.preventDefault(); onSwitchSidebar(id); closeMenu(); }} className="block text-sm text-gray-700 p-2 rounded-md hover:bg-gray-100 truncate">{space.name}</a>
                     ))}
                 </div>
             </div>
-            <div className="mt-2 pt-2 border-t">
-                 <a href="#" onClick={(e) => { e.preventDefault(); onShowRecent(); closeMenu(); }} className="flex items-center gap-2 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700 font-medium">
+            <div className="pt-1"><div className="border-t border-gray-200"></div></div>
+            <div>
+                 <a href="#" onClick={(e) => { e.preventDefault(); onShowRecent(); closeMenu(); }} className="flex items-center gap-3 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700 font-medium">
                     <RecentIcon />
                     <span>Recent boards</span>
                 </a>
@@ -354,7 +476,7 @@ const SpaceSidebar = ({ space, onSelectBoard, activeSidebarSelectionId }) => {
     );
 };
 
-const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelectionId, onNavigateHome }) => {
+const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelectionId }) => {
     const groupedBoards = recentBoards.reduce((acc, board) => {
         const date = board.lastOpenedDate;
         if (!acc[date]) acc[date] = [];
@@ -368,10 +490,6 @@ const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelecti
               <h2 className="font-bold text-lg">Recent Boards</h2>
               <p className="text-xs text-gray-500 mb-4">Boards you have recently visited.</p>
             </div>
-            <a href="#" onClick={(e) => { e.preventDefault(); onNavigateHome()}} className="flex items-center gap-2 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700 font-medium border-b mb-2">
-                <HomeIcon />
-                <span>Back to Home</span>
-            </a>
             {Object.entries(groupedBoards).map(([date, boards]) => (
                 <div key={date} className="mt-4">
                     <h3 className="text-sm font-semibold text-gray-600 p-1">{date}</h3>
@@ -391,7 +509,7 @@ const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelecti
 
 const SpaceHeader = ({ spaceName }) => (
      <header className="flex items-center justify-between p-4 h-16 border-b bg-white">
-        <h1 className="text-xl font-semibold">{spaceName || "Miro"}</h1>
+        <h1 className="text-xl font-semibold">{spaceName || "Team"}</h1>
         <div className="flex items-center gap-4"><button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"><PlusIcon className="h-4 w-4" /> Create new</button><img src="https://placehold.co/32x32/E0E0E0/000000?text=P" alt="User Avatar" className="w-8 h-8 rounded-full" /></div>
     </header>
 );
@@ -470,7 +588,16 @@ const SpaceBoardList = ({ space }) => {
 };
 
 const SpaceContent = ({ activeContentContext }) => {
-    if (!activeContentContext || !activeContentContext.spaceId) {
+    if (!activeContentContext || !activeContentContext.boardId) {
+        const space = activeContentContext?.spaceId ? spacesData[activeContentContext.spaceId] : null;
+        if (space) {
+             return (
+                <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+                    <SpaceHeader spaceName={space.name} />
+                    <div className="flex-1 relative"><SpaceBoardList space={space} /></div>
+                </main>
+            );
+        }
         return (
             <main className="flex-1 bg-white overflow-y-auto flex flex-col">
                 <SpaceHeader spaceName={null} />
@@ -482,24 +609,22 @@ const SpaceContent = ({ activeContentContext }) => {
     }
     
     const { spaceId, boardId } = activeContentContext;
-    const space = spacesData[spaceId];
-    if (!space) return null;
+    const space = spaceId ? spacesData[spaceId] : null;
 
-    const allBoards = space.sections.flatMap(s => s.boards);
-    const activeBoard = allBoards.find(b => b.id === boardId);
+    const activeBoard = allBoardsMap.get(boardId);
 
     let content;
     if (boardId === 'overview') {
         content = <SpaceOverview space={space} />;
     } else if (activeBoard) {
         content = <MiroBoard board={activeBoard} />;
-    } else {
+    } else if (space) {
         content = <SpaceBoardList space={space} />;
     }
 
     return (
         <main className="flex-1 bg-white overflow-y-auto flex flex-col">
-            <SpaceHeader spaceName={space.name} />
+            <SpaceHeader spaceName={space ? space.name : "Team"} />
             <div className="flex-1 relative">{content}</div>
         </main>
     );
@@ -527,6 +652,16 @@ export default function App() {
             setActiveContentContext({ spaceId: spaceId, boardId: null });
             setActiveSidebarSelectionId(null);
         }
+    };
+
+    const handleNavigateToBoardFromDashboard = (board) => {
+        setCurrentView('space');
+        if (board.spaceId) {
+            setSidebarContext(board.spaceId);
+        } else {
+            setSidebarContext('recent');
+        }
+        handleSelectBoard(board.spaceId, board.id);
     };
     
     const handleNavigateToBoardFromRecent = (spaceId, boardId) => {
@@ -566,8 +701,7 @@ export default function App() {
         setActiveContentContext({ spaceId, boardId });
         setActiveSidebarSelectionId(boardId);
         
-        const allBoards = Object.values(spacesData).flatMap(s => s.sections.flatMap(sec => sec.boards));
-        const board = allBoards.find(b => b.id === boardId);
+        const board = allBoardsMap.get(boardId);
         if (board) {
             setRecentBoards(prev => {
                 const newRecent = [{...board, lastOpenedDate: 'Today'}, ...prev.filter(b => b.id !== boardId)];
@@ -583,7 +717,7 @@ export default function App() {
             return <RecentBoardsSidebar recentBoards={recentBoards} onSelectBoard={(boardId) => {
                 const board = recentBoards.find(b => b.id === boardId);
                 if(board) handleSelectBoard(board.spaceId, boardId);
-            }} activeSidebarSelectionId={activeSidebarSelectionId} onNavigateHome={handleNavigateHome} />;
+            }} activeSidebarSelectionId={activeSidebarSelectionId} />;
         }
         if (activeSpace) {
             return <SpaceSidebar space={activeSpace} onSelectBoard={(boardId) => handleSelectBoard(sidebarContext, boardId)} activeSidebarSelectionId={activeSidebarSelectionId} />;
@@ -597,7 +731,7 @@ export default function App() {
                 return <RecentContent recentBoards={recentBoards} onNavigateToBoard={handleNavigateToBoardFromRecent} />;
             case 'home':
             default:
-                return <DashboardContent />;
+                return <DashboardContent onNavigateToBoard={handleNavigateToBoardFromDashboard} />;
         }
     }
     
@@ -632,7 +766,7 @@ export default function App() {
                                         <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5 ${isSpaceMenuOpen ? 'rotate-180' : ''}`} />
                                     </button>
                                 </div>
-                                {isSpaceMenuOpen && <SpaceMenu onSwitchSidebar={handleSwitchSidebar} onShowRecent={handleShowRecentInSpace} closeMenu={() => setIsSpaceMenuOpen(false)} />}
+                                {isSpaceMenuOpen && <SpaceMenu onSwitchSidebar={handleSwitchSidebar} onShowRecent={handleShowRecentInSpace} closeMenu={() => setIsSpaceMenuOpen(false)} sidebarSpaceId={sidebarContext} activeContentSpaceId={activeContentContext?.spaceId} />}
                             </div>
                             <div className="flex items-center">
                                <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
