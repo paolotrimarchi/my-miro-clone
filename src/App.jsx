@@ -230,7 +230,7 @@ const DashboardSidebar = ({ onNavigateToSpace, onNavigateToRecent, activeDashboa
     const allSpaces = Object.entries(spacesData).filter(([, space]) => !space.pinned);
 
     return (
-        <aside ref={sidebarRef} style={{ width: `${width}px` }} className="bg-gray-50 flex flex-col h-screen border-r relative">
+        <aside ref={sidebarRef} style={{ width: `${width}px` }} className="bg-gray-50 flex-col h-screen border-r relative hidden md:flex">
             <div className="p-2 border-b h-16 flex items-center"><TeamSwitcher /></div>
             <div className="flex-grow overflow-y-auto">
                 <div className="p-2"><div className="relative"><div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><SearchIcon className="h-5 w-5 text-gray-400" /></div><input type="text" placeholder="Search by title or topic" className="w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" /></div></div>
@@ -294,29 +294,39 @@ const TemplateCard = ({ template }) => {
 
 
 const DashboardContent = ({ onNavigateToBoard }) => {
-    const allBoardsInTeam = [...Object.values(spacesData).flatMap(s => s.sections.flatMap(sec => sec.boards)), ...teamBoardsData];
+    const allBoardsInTeam = [ ...teamBoardsData, ...Object.values(spacesData).flatMap(s => s.sections.flatMap(sec => sec.boards))];
 
     return (
-        <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+        <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
             <DashboardHeader />
-            <div className="p-8">
+            <div className="p-4 md:p-8">
                 <div className="bg-gray-50 rounded-lg p-4 mb-8">
                      <div className="flex space-x-4 overflow-x-auto pb-2">
                         {templates.map((template, index) => <TemplateCard key={index} template={template} />)}
                     </div>
                 </div>
-                <div>
-                    <div className="flex justify-between items-center mb-4">
+                <div className="overflow-x-auto">
+                    <div className="flex justify-between items-center flex-wrap gap-y-2 mb-4">
                         <h2 className="text-2xl font-bold">Boards in this team</h2>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4 flex-shrink-0">
                             <button className="text-sm font-medium text-blue-600 hover:underline">Explore templates</button>
                             <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 hover:bg-blue-700">
                                 <PlusIcon className="h-4 w-4 text-white" /> Create new
                             </button>
                         </div>
                     </div>
-                    <table className="w-full text-left text-sm">
-                        <thead><tr className="text-gray-500 font-medium"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4">Online users</th><th className="py-2 px-4">Classification</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4">Owner</th><th className="py-2 px-4"></th></tr></thead>
+                    <table className="w-full text-left text-sm min-w-[640px]">
+                        <thead>
+                            <tr className="text-gray-500 font-medium">
+                                <th className="py-2 px-4 w-2/5">Name</th>
+                                <th className="py-2 px-4 hidden lg:table-cell">Online users</th>
+                                <th className="py-2 px-4">Space</th>
+                                <th className="py-2 px-4 hidden md:table-cell">Classification</th>
+                                <th className="py-2 px-4">Last opened</th>
+                                <th className="py-2 px-4 hidden lg:table-cell">Owner</th>
+                                <th className="py-2 px-4"></th>
+                            </tr>
+                        </thead>
                         <tbody>{allBoardsInTeam.map((board) => 
                             <tr key={board.id} className="border-t hover:bg-gray-50">
                                 <td className="py-3 px-4">
@@ -325,10 +335,11 @@ const DashboardContent = ({ onNavigateToBoard }) => {
                                     </a>
                                     <div className="text-xs text-gray-500 ml-6">Modified by {board.owner}, {board.lastOpenedDate}</div>
                                 </td>
-                                <td className="py-3 px-4">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
-                                <td className="py-3 px-4">{board.classification && <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">{board.classification}</span>}</td>
+                                <td className="py-3 px-4 hidden lg:table-cell">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
+                                <td className="py-3 px-4 text-gray-600">{board.spaceId ? spacesData[board.spaceId].name : ''}</td>
+                                <td className="py-3 px-4 hidden md:table-cell">{board.classification && <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">{board.classification}</span>}</td>
                                 <td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td>
-                                <td className="py-3 px-4 text-gray-600">{board.owner}</td>
+                                <td className="py-3 px-4 hidden lg:table-cell text-gray-600">{board.owner}</td>
                                 <td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td>
                             </tr>)}
                         </tbody>
@@ -348,26 +359,27 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
     }, {});
 
     return (
-        <main className="flex-1 bg-white overflow-y-auto">
+        <main className="flex-1 bg-white overflow-y-auto min-w-0">
             <DashboardHeader />
-            <div className="p-8">
+            <div className="p-4 md:p-8">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-3xl font-bold">Recent</h1>
                     <div className="flex items-center gap-2"><button className="p-2 rounded-md hover:bg-gray-100"><GridIcon /></button></div>
                 </div>
+                <div className="overflow-x-auto">
                 {Object.entries(groupedBoards).map(([date, boards]) => (
                     <div key={date} className="mt-6">
                         <h2 className="text-lg font-semibold mb-2">{date}</h2>
-                        <table className="w-full text-left text-sm">
-                             <thead><tr className="text-gray-500 font-medium border-b"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4">Online users</th><th className="py-2 px-4">Space</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4">Owner</th><th className="py-2 px-4"></th></tr></thead>
+                        <table className="w-full text-left text-sm min-w-[640px]">
+                             <thead><tr className="text-gray-500 font-medium border-b"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4 hidden lg:table-cell">Online users</th><th className="py-2 px-4">Space</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4 hidden lg:table-cell">Owner</th><th className="py-2 px-4"></th></tr></thead>
                             <tbody>
                                 {boards.map(board => (
                                     <tr key={board.id} className="border-t hover:bg-gray-50">
                                         <td className="py-3 px-4"><a href="#" onClick={(e) => {e.preventDefault(); onNavigateToBoard(board.spaceId, board.id)}} className="font-medium flex items-center gap-2 hover:underline"><span>{board.icon}</span>{board.name}</a></td>
-                                        <td className="py-3 px-4">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
+                                        <td className="py-3 px-4 hidden lg:table-cell">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td>
                                         <td className="py-3 px-4 text-gray-600">{board.spaceId ? spacesData[board.spaceId].name : 'Team Board'}</td>
                                         <td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td>
-                                        <td className="py-3 px-4 text-gray-600">{board.owner}</td>
+                                        <td className="py-3 px-4 hidden lg:table-cell text-gray-600">{board.owner}</td>
                                         <td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td>
                                     </tr>
                                 ))}
@@ -375,6 +387,7 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
                         </table>
                     </div>
                 ))}
+                </div>
             </div>
         </main>
     )
@@ -426,11 +439,11 @@ const SpaceMenu = ({ onSwitchSidebar, onShowRecent, closeMenu, sidebarSpaceId, a
 
 const SidebarContainer = ({ isExpanded, setIsExpanded, children }) => {
      if (!isExpanded) {
-        return <div className="p-2 bg-gray-50 border-r"><button onClick={() => setIsExpanded(true)} className="p-2 rounded-md hover:bg-gray-200"><MenuIcon /></button></div>;
+        return <div className="p-2 bg-gray-50 border-r md:hidden"><button onClick={() => setIsExpanded(true)} className="p-2 rounded-md hover:bg-gray-200"><MenuIcon /></button></div>;
     }
 
     return (
-        <aside className="w-64 bg-gray-50 flex flex-col h-screen border-r transition-all duration-300">
+        <aside className="w-64 bg-gray-50 flex-col h-screen border-r transition-all duration-300 hidden md:flex">
             {children}
         </aside>
     );
@@ -515,8 +528,8 @@ const SpaceHeader = ({ spaceName }) => (
 );
 
 const SpaceOverview = ({ space }) => (
-    <div className="p-8 max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2">Space Overview: {space.name}</h1>
+    <div className="p-4 md:p-8 max-w-4xl mx-auto">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Space Overview: {space.name}</h1>
         <p className="text-gray-600 mb-6">Spaces are more than just folders for your boards & formats. The Overview becomes the central hub where project insights, action, pulse & progress comes to life.</p>
         
         <div className="bg-gray-50 p-6 rounded-lg mb-6">
@@ -577,12 +590,14 @@ const MiroBoard = ({ board }) => {
 const SpaceBoardList = ({ space }) => {
     const allBoards = space.sections.flatMap(s => s.boards);
     return (
-        <div className="p-8">
+        <div className="p-4 md:p-8">
             <div className="flex justify-between items-center mb-4"><h2 className="text-2xl font-bold">Boards in {space.name}</h2><div className="flex items-center gap-2"><button className="p-2 rounded-md hover:bg-gray-100"><GridIcon /></button></div></div>
-            <table className="w-full text-left text-sm">
-                <thead><tr className="text-gray-500 font-medium"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4">Online users</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4">Owner</th><th className="py-2 px-4"></th></tr></thead>
-                <tbody>{allBoards.map((board) => <tr key={board.id} className="border-t hover:bg-gray-50"><td className="py-3 px-4"><div className="font-medium flex items-center gap-2"><span>{board.icon}</span>{board.name}</div></td><td className="py-3 px-4">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td><td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td><td className="py-3 px-4 text-gray-600">{board.owner}</td><td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td></tr>)}</tbody>
-            </table>
+            <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm min-w-[640px]">
+                    <thead><tr className="text-gray-500 font-medium"><th className="py-2 px-4 w-2/5">Name</th><th className="py-2 px-4 hidden lg:table-cell">Online users</th><th className="py-2 px-4">Last opened</th><th className="py-2 px-4 hidden lg:table-cell">Owner</th><th className="py-2 px-4"></th></tr></thead>
+                    <tbody>{allBoards.map((board) => <tr key={board.id} className="border-t hover:bg-gray-50"><td className="py-3 px-4"><div className="font-medium flex items-center gap-2"><span>{board.icon}</span>{board.name}</div></td><td className="py-3 px-4 hidden lg:table-cell">{board.onlineUsers > 0 && <div className="flex items-center -space-x-2"><img src={`https://placehold.co/24x24/E91E63/FFFFFF?text=A`} className="rounded-full border-2 border-white" /></div>}</td><td className="py-3 px-4 text-gray-600">{board.lastOpenedDate}</td><td className="py-3 px-4 hidden lg:table-cell text-gray-600">{board.owner}</td><td className="py-3 px-4"><div className="flex items-center gap-2"><button className="text-gray-400 hover:text-gray-800"><StarredIcon /></button><button className="text-gray-400 hover:text-gray-800"><MoreHorizontalIcon /></button></div></td></tr>)}</tbody>
+                </table>
+            </div>
         </div>
     );
 };
@@ -592,16 +607,16 @@ const SpaceContent = ({ activeContentContext }) => {
         const space = activeContentContext?.spaceId ? spacesData[activeContentContext.spaceId] : null;
         if (space) {
              return (
-                <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+                <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
                     <SpaceHeader spaceName={space.name} />
                     <div className="flex-1 relative"><SpaceBoardList space={space} /></div>
                 </main>
             );
         }
         return (
-            <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+            <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
                 <SpaceHeader spaceName={null} />
-                <div className="flex-1 flex items-center justify-center text-gray-500">
+                <div className="flex-1 flex items-center justify-center text-gray-500 p-4 text-center">
                     <p>Select a board to view its content</p>
                 </div>
             </main>
@@ -623,7 +638,7 @@ const SpaceContent = ({ activeContentContext }) => {
     }
 
     return (
-        <main className="flex-1 bg-white overflow-y-auto flex flex-col">
+        <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
             <SpaceHeader spaceName={space ? space.name : "Team"} />
             <div className="flex-1 relative">{content}</div>
         </main>
@@ -751,7 +766,7 @@ export default function App() {
     return (
         <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
             {currentView === 'dashboard' ? (
-                <><DashboardSidebar onNavigateToSpace={handleNavigateToSpaceFromDashboard} onNavigateToRecent={handleDashboardNavigation} activeDashboardView={dashboardView} /><div className="flex-1 flex flex-col">{renderDashboardContent()}</div></>
+                <><DashboardSidebar onNavigateToSpace={handleNavigateToSpaceFromDashboard} onNavigateToRecent={handleDashboardNavigation} activeDashboardView={dashboardView} /><div className="flex-1 flex flex-col min-w-0">{renderDashboardContent()}</div></>
             ) : (
                 <>
                     <SidebarContainer isExpanded={isSpaceSidebarExpanded} setIsExpanded={setIsSpaceSidebarExpanded}>
@@ -775,7 +790,7 @@ export default function App() {
                         </div>
                         {renderSidebarContent()}
                     </SidebarContainer>
-                    <div className="flex-1 flex flex-col">
+                    <div className="flex-1 flex flex-col min-w-0">
                         <SpaceContent activeContentContext={activeContentContext} />
                     </div>
                 </>
