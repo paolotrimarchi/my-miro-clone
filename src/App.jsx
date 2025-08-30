@@ -395,48 +395,6 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
 
 // --- SPACE VIEW COMPONENTS ---
 
-const SpaceMenu = ({ onSwitchSidebar, onShowRecent, closeMenu, sidebarSpaceId, activeContentSpaceId }) => {
-    const pinnedSpaces = Object.entries(spacesData).filter(([, s]) => s.pinned);
-    const showBackToSpace = activeContentSpaceId && sidebarSpaceId && activeContentSpaceId !== sidebarSpaceId;
-    const activeContentSpaceName = showBackToSpace ? spacesData[activeContentSpaceId].name : '';
-
-    return (
-        <div className="absolute top-full mt-2 w-64 bg-white rounded-md shadow-lg border z-10 p-2 space-y-1">
-            {showBackToSpace && (
-                <>
-                    <a 
-                        href="#" 
-                        onClick={(e) => { e.preventDefault(); onSwitchSidebar(activeContentSpaceId); closeMenu(); }} 
-                        className="flex items-center gap-3 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700"
-                    >
-                        <BackArrowIcon />
-                        <span>{activeContentSpaceName}</span>
-                    </a>
-                    <div className="pt-1"><div className="border-t border-gray-200"></div></div>
-                </>
-            )}
-            <div>
-                <h3 className="text-sm font-bold text-gray-800 px-2 my-2 flex items-center gap-2">
-                    <StarredIcon className="h-4 w-4" /> Pinned Spaces
-                </h3>
-                <div className="space-y-1">
-                    {pinnedSpaces.map(([id, space]) => (
-                        <a href="#" key={id} onClick={(e) => { e.preventDefault(); onSwitchSidebar(id); closeMenu(); }} className="block text-sm text-gray-700 p-2 rounded-md hover:bg-gray-100 truncate">{space.name}</a>
-                    ))}
-                </div>
-            </div>
-            <div className="pt-1"><div className="border-t border-gray-200"></div></div>
-            <div>
-                 <a href="#" onClick={(e) => { e.preventDefault(); onShowRecent(); closeMenu(); }} className="flex items-center gap-3 p-2 rounded-md text-sm truncate hover:bg-gray-100 text-gray-700 font-medium">
-                    <RecentIcon />
-                    <span>Recent boards</span>
-                </a>
-            </div>
-        </div>
-    );
-};
-
-
 const SidebarContainer = ({ isExpanded, setIsExpanded, children }) => {
      if (!isExpanded) {
         return <div className="p-2 bg-gray-50 border-r md:hidden"><button onClick={() => setIsExpanded(true)} className="p-2 rounded-md hover:bg-gray-200"><MenuIcon /></button></div>;
@@ -750,19 +708,6 @@ export default function App() {
         }
     }
     
-    const [isSpaceMenuOpen, setIsSpaceMenuOpen] = useState(false);
-    const menuRef = useRef(null);
-     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setIsSpaceMenuOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [menuRef]);
-
-
     return (
         <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
             {currentView === 'dashboard' ? (
@@ -771,18 +716,9 @@ export default function App() {
                 <>
                     <SidebarContainer isExpanded={isSpaceSidebarExpanded} setIsExpanded={setIsSpaceSidebarExpanded}>
                          <div className="p-2 border-b h-16 flex items-center justify-between">
-                            <div ref={menuRef} className="relative">
-                               <div className="flex items-center rounded-md hover:bg-gray-200 group">
-                                    <button onClick={handleNavigateHome} className="p-2 rounded-l-md">
-                                        <HomeIcon />
-                                    </button>
-                                    <div className="h-5 w-px bg-gray-300"></div>
-                                    <button onClick={() => setIsSpaceMenuOpen(prev => !prev)} className="p-2 rounded-r-md">
-                                        <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5 ${isSpaceMenuOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-                                </div>
-                                {isSpaceMenuOpen && <SpaceMenu onSwitchSidebar={handleSwitchSidebar} onShowRecent={handleShowRecentInSpace} closeMenu={() => setIsSpaceMenuOpen(false)} sidebarSpaceId={sidebarContext} activeContentSpaceId={activeContentContext?.spaceId} />}
-                            </div>
+                            <button onClick={handleNavigateHome} className="p-2 rounded-md hover:bg-gray-200">
+                                <HomeIcon />
+                            </button>
                             <div className="flex items-center">
                                <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
                                <button onClick={() => setIsSpaceSidebarExpanded(false)} className="p-2 rounded-md hover:bg-gray-200"><CloseIcon /></button>
