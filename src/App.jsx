@@ -179,6 +179,12 @@ const CloseIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2
 const MenuIcon = ({ className = "h-6 w-6" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>;
 const PlayIcon = () => <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M6.323 3.682a.5.5 0 01.765-.424l8 4.5a.5.5 0 010 .848l-8 4.5a.5.5 0 01-.765-.424V3.682z"></path></svg>;
 const BackArrowIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>;
+const SelectIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path></svg>;
+const TextIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H7a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2v-9a2 2 0 00-2-2z"></path><path d="M12 16V8"></path></svg>;
+const StickyNoteIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15.5 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8.5L15.5 3z"></path><path d="M15 3v6h6"></path></svg>;
+const ShapeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>;
+const UndoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"></path><path d="M11 5l-4 4 4 4"></path></svg>;
+const RedoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h13l7 8-7 8H3a2 2 0 01-2-2V6a2 2 0 012-2z"></path><path d="M13 15l4-4-4-4"></path></svg>;
 
 
 // --- DASHBOARD COMPONENTS ---
@@ -395,18 +401,6 @@ const RecentContent = ({ recentBoards, onNavigateToBoard }) => {
 
 // --- SPACE VIEW COMPONENTS ---
 
-const SidebarContainer = ({ isExpanded, setIsExpanded, children }) => {
-     if (!isExpanded) {
-        return <div className="p-2 bg-gray-50 border-r md:hidden"><button onClick={() => setIsExpanded(true)} className="p-2 rounded-md hover:bg-gray-200"><MenuIcon /></button></div>;
-    }
-
-    return (
-        <aside className="w-64 bg-gray-50 flex-col h-screen border-r transition-all duration-300 hidden md:flex">
-            {children}
-        </aside>
-    );
-}
-
 const SpaceSidebar = ({ space, onSelectBoard, activeSidebarSelectionId }) => {
     const [openSections, setOpenSections] = useState(() => {
         const initialState = {};
@@ -419,7 +413,7 @@ const SpaceSidebar = ({ space, onSelectBoard, activeSidebarSelectionId }) => {
     };
 
     return (
-        <div className="flex-grow overflow-y-auto flex flex-col p-2">
+        <div className="flex-grow overflow-y-auto flex flex-col p-2 h-full">
             <div className="flex items-center justify-between mb-2">
                 <div>
                     <h2 className="font-bold text-base">{space.name}</h2>
@@ -456,7 +450,7 @@ const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelecti
     }, {});
 
     return (
-         <div className="flex-grow overflow-y-auto p-2">
+         <div className="flex-grow overflow-y-auto p-2 h-full">
             <div className="p-2">
               <h2 className="font-bold text-lg">Recent Boards</h2>
               <p className="text-xs text-gray-500 mb-4">Boards you have recently visited.</p>
@@ -478,49 +472,119 @@ const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelecti
     );
 };
 
-const SpaceHeader = ({ spaceName }) => (
-     <header className="flex items-center justify-between p-4 h-16 border-b bg-white">
-        <h1 className="text-xl font-semibold">{spaceName || "Team"}</h1>
-        <div className="flex items-center gap-4"><button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2"><PlusIcon className="h-4 w-4" /> Create new</button><img src="https://placehold.co/32x32/E0E0E0/000000?text=P" alt="User Avatar" className="w-8 h-8 rounded-full" /></div>
-    </header>
-);
-
-const SpaceOverview = ({ space }) => (
-    <div className="p-4 md:p-8 max-w-4xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Space Overview: {space.name}</h1>
-        <p className="text-gray-600 mb-6">Spaces are more than just folders for your boards & formats. The Overview becomes the central hub where project insights, action, pulse & progress comes to life.</p>
-        
-        <div className="bg-gray-50 p-6 rounded-lg mb-6">
-            <h2 className="text-2xl font-semibold mb-3">Project Goals</h2>
-            <p className="mb-4">The Space Overview transforms each Space into an intelligent, dynamic workspace. It's flexible, dynamic and aims to redefine how teams stay aligned, make decisions, & move forward - faster, smarter, together.</p>
-            <ul className="list-disc list-inside space-y-2">
-                <li>Increase user engagement by 15%.</li>
-                <li>Streamline the onboarding process for new team members.</li>
-                <li>Finalize Q3 roadmap and resource allocation.</li>
-            </ul>
+const FloatingBoardHeader = ({ board, isSidebarExpanded }) => (
+    <>
+        <div className={`absolute top-4 z-10 flex items-center gap-2 transition-all duration-300 ${isSidebarExpanded ? 'left-4' : 'left-20'}`}>
+             <div className="bg-white rounded-full p-2 shadow-md flex items-center gap-2">
+                <span className="text-lg">{board.icon}</span>
+                <h1 className="font-semibold">{board.name}</h1>
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md">{board.classification}</span>
+                <button className="p-1 rounded-md hover:bg-gray-100"><MoreHorizontalIcon className="h-4 w-4" /></button>
+            </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 bg-black rounded-lg p-6 text-white flex flex-col justify-between">
-                 <div>
-                    <h3 className="text-xl font-bold mb-2">Space Overview dashboard - Prototype</h3>
-                    <p className="text-sm text-gray-400">July 25, 2025</p>
-                 </div>
-                 <div className="flex items-center justify-center h-48 bg-gray-800 rounded-md mt-4 cursor-pointer">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                        <PlayIcon />
-                    </div>
-                 </div>
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+            <div className="flex items-center -space-x-2 bg-white p-1 rounded-full shadow-md">
+                <img src="https://placehold.co/24x24/E91E63/FFFFFF?text=A" alt="user avatar" className="rounded-full border-2 border-white" />
+                <img src="https://placehold.co/24x24/3F51B5/FFFFFF?text=B" alt="user avatar" className="rounded-full border-2 border-white" />
             </div>
-            <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-3">Project Members</h3>
-                <div className="space-y-3">
-                    {['Kit Unger', 'Brett Barkman', 'Vihar...', 'Gaetano Consulo', 'Bella Morehead'].map(name => (
-                         <div key={name} className="flex items-center justify-between text-sm">
-                             <span>{name}</span>
-                             <img src={`https://placehold.co/24x24/E0E0E0/000000?text=${name.charAt(0)}`} alt={name} className="w-6 h-6 rounded-full" />
-                         </div>
-                    ))}
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md hover:bg-blue-700">Share</button>
+        </div>
+    </>
+);
+
+const BoardToolbar = () => {
+    const [activeTool, setActiveTool] = useState('select');
+    const tools = [
+        { id: 'select', icon: <SelectIcon /> },
+        { id: 'text', icon: <TextIcon /> },
+        { id: 'sticky-note', icon: <StickyNoteIcon /> },
+        { id: 'shape', icon: <ShapeIcon /> }
+    ];
+    return (
+        <div className="absolute top-1/2 left-4 -translate-y-1/2 z-10 bg-white rounded-lg shadow-md p-1 flex flex-col items-center space-y-1">
+            {tools.map(tool => (
+                 <button key={tool.id} onClick={() => setActiveTool(tool.id)} className={`p-2 rounded-md ${activeTool === tool.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'}`}>
+                    {tool.icon}
+                </button>
+            ))}
+             <div className="border-t my-1 w-full"></div>
+            <button className="p-2 rounded-md hover:bg-gray-100 w-full"><UndoIcon /></button>
+            <button className="p-2 rounded-md hover:bg-gray-100 w-full"><RedoIcon /></button>
+        </div>
+    )
+}
+
+
+const SpaceOverview = ({ space }) => (
+    <div className="w-full h-full bg-white p-8 overflow-y-auto">
+        <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Content Column */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Header Widget */}
+                    <div className="bg-white p-6 rounded-lg border">
+                        <h1 className="text-4xl font-bold mb-2">Space Overview: {space.name}</h1>
+                        <p className="text-gray-600">The Overview is the central hub where project insights, action, and progress come to life. It's flexible, dynamic, and aims to redefine how teams stay aligned.</p>
+                    </div>
+
+                    {/* Key Boards Widget */}
+                    <div className="bg-white p-6 rounded-lg border">
+                        <h2 className="text-2xl font-bold mb-4">Key Boards & Resources</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {space.sections.flatMap(s => s.boards).slice(0, 4).map(board => (
+                                <div key={board.id} className="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer border border-gray-200">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-2xl">{board.icon}</span>
+                                        <div>
+                                            <h3 className="font-semibold">{board.name}</h3>
+                                            <p className="text-xs text-gray-500">Last opened: {board.lastOpenedDate}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Right Sidebar Column */}
+                <div className="space-y-8">
+                    {/* Project Members Widget */}
+                    <div className="bg-white p-6 rounded-lg border">
+                        <h3 className="text-xl font-bold mb-4">Project Members</h3>
+                        <div className="space-y-3">
+                            {['Kit Unger', 'Brett Barkman', 'Vihar...', 'Gaetano Consulo', 'Bella Morehead'].map(name => (
+                                 <div key={name} className="flex items-center justify-between text-sm">
+                                     <span>{name}</span>
+                                     <img src={`https://placehold.co/24x24/E0E0E0/000000?text=${name.charAt(0)}`} alt={name} className="w-6 h-6 rounded-full" />
+                                 </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/* Status Widget */}
+                     <div className="bg-white p-6 rounded-lg border">
+                        <h3 className="text-xl font-bold mb-4">Project Status</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium">Design Phase</span>
+                                    <span className="text-gray-500">80%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div className="bg-blue-500 h-2.5 rounded-full" style={{width: '80%'}}></div>
+                                </div>
+                            </div>
+                             <div>
+                                <div className="flex justify-between text-sm mb-1">
+                                    <span className="font-medium">Development</span>
+                                    <span className="text-gray-500">45%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div className="bg-green-500 h-2.5 rounded-full" style={{width: '45%'}}></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -532,9 +596,9 @@ const MiroBoard = ({ board }) => {
     useEffect(() => { setWidgets(generateRandomWidgets()); }, [board.id]);
 
     return (
-        <div className="w-full h-full bg-gray-100 relative overflow-hidden">
-            <div className="p-4 bg-white border-b"><h2 className="text-lg font-semibold">{board.icon} {board.name}</h2></div>
-            <div className="absolute inset-0 m-4">
+        <div className="w-full h-full bg-gray-200 relative overflow-hidden">
+            <BoardToolbar />
+            <div className="absolute inset-4 bg-gray-50 rounded-lg shadow-inner">
                 {widgets.map(widget => (
                     <div key={widget.id} style={widget.style} className={`flex items-center justify-center p-2 shadow-lg ${widget.color} ${widget.shape}`}>
                         <p className="text-sm text-center">{widget.content}</p>
@@ -561,55 +625,61 @@ const SpaceBoardList = ({ space }) => {
 };
 
 const SpaceContent = ({ activeContentContext }) => {
-    if (!activeContentContext || !activeContentContext.boardId) {
-        const space = activeContentContext?.spaceId ? spacesData[activeContentContext.spaceId] : null;
-        if (space) {
-             return (
-                <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
-                    <SpaceHeader spaceName={space.name} />
-                    <div className="flex-1 relative"><SpaceBoardList space={space} /></div>
-                </main>
-            );
-        }
+    if (!activeContentContext) {
         return (
             <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
-                <SpaceHeader spaceName={null} />
-                <div className="flex-1 flex items-center justify-center text-gray-500 p-4 text-center">
+                <DashboardHeader />
+                 <div className="flex-1 flex items-center justify-center text-gray-500 p-4 text-center">
                     <p>Select a board to view its content</p>
                 </div>
             </main>
-        );
+        )
     }
     
     const { spaceId, boardId } = activeContentContext;
     const space = spaceId ? spacesData[spaceId] : null;
 
-    const activeBoard = allBoardsMap.get(boardId);
-
-    let content;
     if (boardId === 'overview') {
-        content = <SpaceOverview space={space} />;
-    } else if (activeBoard) {
-        content = <MiroBoard board={activeBoard} />;
-    } else if (space) {
-        content = <SpaceBoardList space={space} />;
+         return (
+             <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
+                <DashboardHeader />
+                <div className="flex-1 relative">
+                    <SpaceOverview space={space} />
+                </div>
+            </main>
+        )
     }
 
-    return (
-        <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
-            <SpaceHeader spaceName={space ? space.name : "Team"} />
-            <div className="flex-1 relative">{content}</div>
-        </main>
-    );
+    const activeBoard = allBoardsMap.get(boardId);
+    if (activeBoard) {
+        return (
+             <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0 relative">
+                <div className="flex-1 relative">
+                    <MiroBoard board={activeBoard} />
+                </div>
+            </main>
+        )
+    }
+    
+    if (space) {
+        return (
+            <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
+                <DashboardHeader />
+                <div className="flex-1 relative"><SpaceBoardList space={space} /></div>
+            </main>
+        );
+    }
+
+    return null;
 };
 
 // --- Main App Component ---
 
 export default function App() {
-    const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'space'
-    const [dashboardView, setDashboardView] = useState('home'); // 'home', 'recent'
-    const [sidebarContext, setSidebarContext] = useState(null); // spaceId or 'recent'
-    const [activeContentContext, setActiveContentContext] = useState(null); // { spaceId, boardId }
+    const [currentView, setCurrentView] = useState('dashboard');
+    const [dashboardView, setDashboardView] = useState('home');
+    const [sidebarContext, setSidebarContext] = useState(null);
+    const [activeContentContext, setActiveContentContext] = useState(null);
     const [activeSidebarSelectionId, setActiveSidebarSelectionId] = useState(null);
     const [isSpaceSidebarExpanded, setIsSpaceSidebarExpanded] = useState(true);
     const [recentBoards, setRecentBoards] = useState([]);
@@ -618,39 +688,22 @@ export default function App() {
         setCurrentView('space');
         setSidebarContext(spaceId);
         const space = spacesData[spaceId];
-        if (space.hasOverview) {
-            setActiveContentContext({ spaceId: spaceId, boardId: 'overview' });
-            setActiveSidebarSelectionId('overview');
-        } else {
-            setActiveContentContext({ spaceId: spaceId, boardId: null });
-            setActiveSidebarSelectionId(null);
-        }
+        const boardId = space.hasOverview ? 'overview' : null;
+        setActiveContentContext({ spaceId, boardId });
+        setActiveSidebarSelectionId(boardId);
     };
 
-    const handleNavigateToBoardFromDashboard = (board) => {
+    const handleNavigateToBoard = (board) => {
         setCurrentView('space');
-        if (board.spaceId) {
-            setSidebarContext(board.spaceId);
-        } else {
-            setSidebarContext('recent');
-        }
-        handleSelectBoard(board.spaceId, board.id);
-    };
-    
-    const handleNavigateToBoardFromRecent = (spaceId, boardId) => {
-        setCurrentView('space');
-        setSidebarContext(spaceId);
-        handleSelectBoard(spaceId, boardId);
-    };
-
-    const handleSwitchSidebar = (spaceId) => {
-        setSidebarContext(spaceId);
-        setActiveSidebarSelectionId(null);
-    };
-
-    const handleShowRecentInSpace = () => {
-        setSidebarContext('recent');
-        setActiveSidebarSelectionId(null);
+        const { spaceId, id } = board;
+        setSidebarContext(spaceId || 'recent');
+        setActiveContentContext({ spaceId, boardId: id });
+        setActiveSidebarSelectionId(id);
+        
+        setRecentBoards(prev => {
+            const newRecent = [{...board, lastOpenedDate: 'Today'}, ...prev.filter(b => b.id !== id)];
+            return [...new Map(newRecent.map(item => [item.id, item])).values()].slice(0, 15);
+        });
     };
     
     const handleNavigateHome = () => {
@@ -662,24 +715,19 @@ export default function App() {
     };
 
     const handleDashboardNavigation = (view) => {
-        if (view === 'home') {
-            setDashboardView('home');
-        } else if (view === 'recent') {
-            setDashboardView('recent');
+        if (['home', 'recent', 'explore', 'starred', 'insights'].includes(view)) {
+             setCurrentView('dashboard');
+             setDashboardView(view);
+             setActiveContentContext(null);
         }
-        // other dashboard views can be added here
     }
-
-    const handleSelectBoard = (spaceId, boardId) => {
-        setActiveContentContext({ spaceId, boardId });
-        setActiveSidebarSelectionId(boardId);
-        
-        const board = allBoardsMap.get(boardId);
-        if (board) {
-            setRecentBoards(prev => {
-                const newRecent = [{...board, lastOpenedDate: 'Today'}, ...prev.filter(b => b.id !== boardId)];
-                return [...new Map(newRecent.map(item => [item.id, item])).values()].slice(0, 15);
-            });
+    
+    const handleSelectInSpace = (selection) => {
+        if (selection === 'overview') {
+            setActiveContentContext({ spaceId: sidebarContext, boardId: 'overview' });
+            setActiveSidebarSelectionId('overview');
+        } else {
+            handleNavigateToBoard(allBoardsMap.get(selection));
         }
     };
 
@@ -687,13 +735,10 @@ export default function App() {
 
     const renderSidebarContent = () => {
         if (sidebarContext === 'recent') {
-            return <RecentBoardsSidebar recentBoards={recentBoards} onSelectBoard={(boardId) => {
-                const board = recentBoards.find(b => b.id === boardId);
-                if(board) handleSelectBoard(board.spaceId, boardId);
-            }} activeSidebarSelectionId={activeSidebarSelectionId} />;
+            return <RecentBoardsSidebar recentBoards={recentBoards} onSelectBoard={(boardId) => handleNavigateToBoard(allBoardsMap.get(boardId))} activeSidebarSelectionId={activeSidebarSelectionId} />;
         }
         if (activeSpace) {
-            return <SpaceSidebar space={activeSpace} onSelectBoard={(boardId) => handleSelectBoard(sidebarContext, boardId)} activeSidebarSelectionId={activeSidebarSelectionId} />;
+            return <SpaceSidebar space={activeSpace} onSelectBoard={handleSelectInSpace} activeSidebarSelectionId={activeSidebarSelectionId} />;
         }
         return null;
     };
@@ -701,32 +746,44 @@ export default function App() {
     const renderDashboardContent = () => {
         switch (dashboardView) {
             case 'recent':
-                return <RecentContent recentBoards={recentBoards} onNavigateToBoard={handleNavigateToBoardFromRecent} />;
+                return <RecentContent recentBoards={recentBoards} onNavigateToBoard={(spaceId, boardId) => handleNavigateToBoard(allBoardsMap.get(boardId))} />;
             case 'home':
             default:
-                return <DashboardContent onNavigateToBoard={handleNavigateToBoardFromDashboard} />;
+                return <DashboardContent onNavigateToBoard={handleNavigateToBoard} />;
         }
     }
-    
+
+    const activeBoard = activeContentContext ? (activeContentContext.boardId === 'overview' ? {id: 'overview', name: 'Overview', icon: '📖', classification: 'Internal'} : allBoardsMap.get(activeContentContext.boardId)) : null;
+
     return (
         <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
             {currentView === 'dashboard' ? (
                 <><DashboardSidebar onNavigateToSpace={handleNavigateToSpaceFromDashboard} onNavigateToRecent={handleDashboardNavigation} activeDashboardView={dashboardView} /><div className="flex-1 flex flex-col min-w-0">{renderDashboardContent()}</div></>
             ) : (
                 <>
-                    <SidebarContainer isExpanded={isSpaceSidebarExpanded} setIsExpanded={setIsSpaceSidebarExpanded}>
-                         <div className="p-2 border-b h-16 flex items-center justify-between">
-                            <button onClick={handleNavigateHome} className="p-2 rounded-md hover:bg-gray-200">
-                                <HomeIcon />
-                            </button>
-                            <div className="flex items-center">
-                               <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
-                               <button onClick={() => setIsSpaceSidebarExpanded(false)} className="p-2 rounded-md hover:bg-gray-200"><CloseIcon /></button>
+                    {isSpaceSidebarExpanded && (
+                        <aside className="w-64 bg-gray-50 flex-col h-screen border-r transition-all duration-300 hidden md:flex">
+                             <div className="p-2 border-b h-16 flex items-center justify-between">
+                                <button onClick={handleNavigateHome} className="p-2 rounded-md hover:bg-gray-200">
+                                    <HomeIcon />
+                                </button>
+                                <div className="flex items-center">
+                                   <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
+                                   <button onClick={() => setIsSpaceSidebarExpanded(false)} className="p-2 rounded-md hover:bg-gray-200"><CloseIcon /></button>
+                                </div>
                             </div>
-                        </div>
-                        {renderSidebarContent()}
-                    </SidebarContainer>
-                    <div className="flex-1 flex flex-col min-w-0">
+                            {renderSidebarContent()}
+                        </aside>
+                    )}
+                    <div className="flex-1 flex flex-col min-w-0 relative">
+                         {!isSpaceSidebarExpanded && (
+                            <div className="absolute top-4 left-4 z-20">
+                                <button onClick={() => setIsSpaceSidebarExpanded(true)} className="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                    <MenuIcon className="h-5 w-5" />
+                                </button>
+                            </div>
+                        )}
+                        {activeBoard && activeContentContext.boardId !== 'overview' && <FloatingBoardHeader board={activeBoard} isSidebarExpanded={isSpaceSidebarExpanded} />}
                         <SpaceContent activeContentContext={activeContentContext} />
                     </div>
                 </>
