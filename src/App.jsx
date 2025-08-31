@@ -179,6 +179,12 @@ const CloseIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2
 const MenuIcon = ({ className = "h-6 w-6" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>;
 const PlayIcon = () => <svg className="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M6.323 3.682a.5.5 0 01.765-.424l8 4.5a.5.5 0 010 .848l-8 4.5a.5.5 0 01-.765-.424V3.682z"></path></svg>;
 const BackArrowIcon = ({ className = "h-5 w-5" }) => <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>;
+const SelectIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path></svg>;
+const TextIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H7a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2v-9a2 2 0 00-2-2z"></path><path d="M12 16V8"></path></svg>;
+const StickyNoteIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15.5 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V8.5L15.5 3z"></path><path d="M15 3v6h6"></path></svg>;
+const ShapeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>;
+const UndoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 4H8l-7 8 7 8h13a2 2 0 002-2V6a2 2 0 00-2-2z"></path><path d="M11 5l-4 4 4 4"></path></svg>;
+const RedoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h13l7 8-7 8H3a2 2 0 01-2-2V6a2 2 0 012-2z"></path><path d="M13 15l4-4-4-4"></path></svg>;
 
 
 // --- DASHBOARD COMPONENTS ---
@@ -437,18 +443,6 @@ const SpaceMenu = ({ onSwitchSidebar, onShowRecent, closeMenu, sidebarSpaceId, a
 };
 
 
-const SidebarContainer = ({ isExpanded, setIsExpanded, children }) => {
-     if (!isExpanded) {
-        return <div className="p-2 bg-gray-50 border-r md:hidden"><button onClick={() => setIsExpanded(true)} className="p-2 rounded-md hover:bg-gray-200"><MenuIcon /></button></div>;
-    }
-
-    return (
-        <aside className="w-64 bg-gray-50 flex-col h-screen border-r transition-all duration-300 hidden md:flex">
-            {children}
-        </aside>
-    );
-}
-
 const SpaceSidebar = ({ space, onSelectBoard, activeSidebarSelectionId }) => {
     const [openSections, setOpenSections] = useState(() => {
         const initialState = {};
@@ -520,42 +514,64 @@ const RecentBoardsSidebar = ({ recentBoards, onSelectBoard, activeSidebarSelecti
     );
 };
 
-const BoardHeader = ({ board }) => {
-    return (
-        <header className="flex items-center justify-between p-2 h-16 border-b bg-white flex-shrink-0">
-            <div className="flex items-center gap-2">
-                 <div className="flex items-center gap-1 text-lg font-semibold">
-                    <span>{board.icon}</span>
-                    <h1>{board.name}</h1>
-                </div>
+const FloatingBoardHeader = ({ board, isSidebarExpanded }) => (
+    <>
+        <div className={`absolute top-4 z-10 flex items-center gap-2 transition-all duration-300 ${isSidebarExpanded ? 'left-4' : 'left-20'}`}>
+             <div className="bg-white rounded-full p-2 shadow-md flex items-center gap-2">
+                <span className="text-lg">{board.icon}</span>
+                <h1 className="font-semibold">{board.name}</h1>
                 <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-md">{board.classification}</span>
                 <button className="p-1 rounded-md hover:bg-gray-100"><MoreHorizontalIcon className="h-4 w-4" /></button>
             </div>
-            <div className="flex items-center gap-2">
-                <div className="flex items-center -space-x-2">
-                    <img src="https://placehold.co/24x24/E91E63/FFFFFF?text=A" alt="user avatar" className="rounded-full border-2 border-white" />
-                    <img src="https://placehold.co/24x24/3F51B5/FFFFFF?text=B" alt="user avatar" className="rounded-full border-2 border-white" />
-                </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">Comment only</button>
+        </div>
+
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+            <div className="flex items-center -space-x-2 bg-white p-1 rounded-full shadow-md">
+                <img src="https://placehold.co/24x24/E91E63/FFFFFF?text=A" alt="user avatar" className="rounded-full border-2 border-white" />
+                <img src="https://placehold.co/24x24/3F51B5/FFFFFF?text=B" alt="user avatar" className="rounded-full border-2 border-white" />
             </div>
-        </header>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md hover:bg-blue-700">Share</button>
+        </div>
+    </>
+);
+
+const BoardToolbar = () => {
+    const [activeTool, setActiveTool] = useState('select');
+    const tools = [
+        { id: 'select', icon: <SelectIcon /> },
+        { id: 'text', icon: <TextIcon /> },
+        { id: 'sticky-note', icon: <StickyNoteIcon /> },
+        { id: 'shape', icon: <ShapeIcon /> }
+    ];
+    return (
+        <div className="absolute top-1/2 left-4 -translate-y-1/2 z-10 bg-white rounded-lg shadow-md p-1 flex flex-col items-center space-y-1">
+            {tools.map(tool => (
+                 <button key={tool.id} onClick={() => setActiveTool(tool.id)} className={`p-2 rounded-md ${activeTool === tool.id ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'}`}>
+                    {tool.icon}
+                </button>
+            ))}
+             <div className="border-t my-1 w-full"></div>
+            <button className="p-2 rounded-md hover:bg-gray-100 w-full"><UndoIcon /></button>
+            <button className="p-2 rounded-md hover:bg-gray-100 w-full"><RedoIcon /></button>
+        </div>
     )
 }
 
+
 const SpaceOverview = ({ space }) => (
-    <div className="w-full h-full bg-gray-100 p-8 overflow-y-auto">
+    <div className="w-full h-full bg-white p-8 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content Column */}
                 <div className="lg:col-span-2 space-y-8">
                     {/* Header Widget */}
-                    <div className="bg-white p-6 rounded-lg shadow">
+                    <div className="bg-white p-6 rounded-lg border">
                         <h1 className="text-4xl font-bold mb-2">Space Overview: {space.name}</h1>
                         <p className="text-gray-600">The Overview is the central hub where project insights, action, and progress come to life. It's flexible, dynamic, and aims to redefine how teams stay aligned.</p>
                     </div>
 
                     {/* Key Boards Widget */}
-                    <div className="bg-white p-6 rounded-lg shadow">
+                    <div className="bg-white p-6 rounded-lg border">
                         <h2 className="text-2xl font-bold mb-4">Key Boards & Resources</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {space.sections.flatMap(s => s.boards).slice(0, 4).map(board => (
@@ -576,7 +592,7 @@ const SpaceOverview = ({ space }) => (
                 {/* Right Sidebar Column */}
                 <div className="space-y-8">
                     {/* Project Members Widget */}
-                    <div className="bg-white p-6 rounded-lg shadow">
+                    <div className="bg-white p-6 rounded-lg border">
                         <h3 className="text-xl font-bold mb-4">Project Members</h3>
                         <div className="space-y-3">
                             {['Kit Unger', 'Brett Barkman', 'Vihar...', 'Gaetano Consulo', 'Bella Morehead'].map(name => (
@@ -588,7 +604,7 @@ const SpaceOverview = ({ space }) => (
                         </div>
                     </div>
                     {/* Status Widget */}
-                     <div className="bg-white p-6 rounded-lg shadow">
+                     <div className="bg-white p-6 rounded-lg border">
                         <h3 className="text-xl font-bold mb-4">Project Status</h3>
                         <div className="space-y-4">
                             <div>
@@ -623,6 +639,7 @@ const MiroBoard = ({ board }) => {
 
     return (
         <div className="w-full h-full bg-gray-200 relative overflow-hidden">
+            <BoardToolbar />
             <div className="absolute inset-4 bg-gray-50 rounded-lg shadow-inner">
                 {widgets.map(widget => (
                     <div key={widget.id} style={widget.style} className={`flex items-center justify-center p-2 shadow-lg ${widget.color} ${widget.shape}`}>
@@ -665,16 +682,9 @@ const SpaceContent = ({ activeContentContext }) => {
     const space = spaceId ? spacesData[spaceId] : null;
 
     if (boardId === 'overview') {
-        const overviewBoardObject = {
-            id: 'overview',
-            name: 'Overview',
-            icon: '📖',
-            classification: 'Internal',
-            spaceId: spaceId
-        };
          return (
              <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
-                <BoardHeader board={overviewBoardObject} />
+                <DashboardHeader />
                 <div className="flex-1 relative">
                     <SpaceOverview space={space} />
                 </div>
@@ -685,8 +695,7 @@ const SpaceContent = ({ activeContentContext }) => {
     const activeBoard = allBoardsMap.get(boardId);
     if (activeBoard) {
         return (
-             <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0">
-                <BoardHeader board={activeBoard} />
+             <main className="flex-1 bg-white overflow-y-auto flex flex-col min-w-0 relative">
                 <div className="flex-1 relative">
                     <MiroBoard board={activeBoard} />
                 </div>
@@ -808,6 +817,7 @@ export default function App() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [menuRef]);
 
+    const activeBoard = activeContentContext ? (activeContentContext.boardId === 'overview' ? {id: 'overview', name: 'Overview', icon: '📖', classification: 'Internal'} : allBoardsMap.get(activeContentContext.boardId)) : null;
 
     return (
         <div className="flex h-screen bg-gray-100 font-sans overflow-hidden">
@@ -815,28 +825,38 @@ export default function App() {
                 <><DashboardSidebar onNavigateToSpace={handleNavigateToSpaceFromDashboard} onNavigateToRecent={handleDashboardNavigation} activeDashboardView={dashboardView} /><div className="flex-1 flex flex-col min-w-0">{renderDashboardContent()}</div></>
             ) : (
                 <>
-                    <SidebarContainer isExpanded={isSpaceSidebarExpanded} setIsExpanded={setIsSpaceSidebarExpanded}>
-                         <div className="p-2 border-b h-16 flex items-center justify-between">
-                            <div ref={menuRef} className="relative">
-                               <div className="flex items-center rounded-md hover:bg-gray-200 group">
-                                    <button onClick={handleNavigateHome} className="p-2 rounded-l-md">
-                                        <HomeIcon />
-                                    </button>
-                                    <div className="h-5 w-px bg-gray-300"></div>
-                                    <button onClick={() => setIsSpaceMenuOpen(prev => !prev)} className="p-2 rounded-r-md">
-                                        <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5 ${isSpaceMenuOpen ? 'rotate-180' : ''}`} />
-                                    </button>
+                    {isSpaceSidebarExpanded && (
+                        <aside className="w-64 bg-gray-50 flex-col h-screen border-r transition-all duration-300 hidden md:flex">
+                             <div className="p-2 border-b h-16 flex items-center justify-between">
+                                <div ref={menuRef} className="relative">
+                                   <div className="flex items-center rounded-md hover:bg-gray-200 group">
+                                        <button onClick={handleNavigateHome} className="p-2 rounded-l-md">
+                                            <HomeIcon />
+                                        </button>
+                                        <div className="h-5 w-px bg-gray-300"></div>
+                                        <button onClick={() => setIsSpaceMenuOpen(prev => !prev)} className="p-2 rounded-r-md">
+                                            <ChevronDownIcon className={`h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5 ${isSpaceMenuOpen ? 'rotate-180' : ''}`} />
+                                        </button>
+                                    </div>
+                                    {isSpaceMenuOpen && <SpaceMenu onSwitchSidebar={handleSwitchSidebar} onShowRecent={handleShowRecentInSpace} closeMenu={() => setIsSpaceMenuOpen(false)} sidebarSpaceId={sidebarContext} activeContentSpaceId={activeContentContext?.spaceId} />}
                                 </div>
-                                {isSpaceMenuOpen && <SpaceMenu onSwitchSidebar={handleSwitchSidebar} onShowRecent={handleShowRecentInSpace} closeMenu={() => setIsSpaceMenuOpen(false)} sidebarSpaceId={sidebarContext} activeContentSpaceId={activeContentContext?.spaceId} />}
+                                <div className="flex items-center">
+                                   <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
+                                   <button onClick={() => setIsSpaceSidebarExpanded(false)} className="p-2 rounded-md hover:bg-gray-200"><CloseIcon /></button>
+                                </div>
                             </div>
-                            <div className="flex items-center">
-                               <button className="p-2 rounded-md hover:bg-gray-200"><SearchIcon /></button>
-                               <button onClick={() => setIsSpaceSidebarExpanded(false)} className="p-2 rounded-md hover:bg-gray-200"><CloseIcon /></button>
+                            {renderSidebarContent()}
+                        </aside>
+                    )}
+                    <div className="flex-1 flex flex-col min-w-0 relative">
+                         {!isSpaceSidebarExpanded && (
+                            <div className="absolute top-4 left-4 z-20">
+                                <button onClick={() => setIsSpaceSidebarExpanded(true)} className="bg-white rounded-full p-2 shadow-md hover:bg-gray-100">
+                                    <MenuIcon className="h-5 w-5" />
+                                </button>
                             </div>
-                        </div>
-                        {renderSidebarContent()}
-                    </SidebarContainer>
-                    <div className="flex-1 flex flex-col min-w-0">
+                        )}
+                        {activeBoard && activeContentContext.boardId !== 'overview' && <FloatingBoardHeader board={activeBoard} isSidebarExpanded={isSpaceSidebarExpanded} />}
                         <SpaceContent activeContentContext={activeContentContext} />
                     </div>
                 </>
